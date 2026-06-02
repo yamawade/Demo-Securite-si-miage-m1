@@ -1,16 +1,16 @@
 // =============================================================================
-// Jenkins CI/CD Pipeline — POC Keycloak Spring Boot
-// Stages : DEV → OWASP → SonarQube → Trivy → Docker → UAT → PREPROD
+// Jenkins CI/CD Pipeline  POC Keycloak Spring Boot
+// Stages : DEV  OWASP  SonarQube  Trivy  Docker  UAT  PREPROD
 //
 // Credentials Jenkins requises (Manage Jenkins > Credentials) :
-//   dockerhub-credentials         → Username/Password (Docker Hub)
-//   nvd-api-key                   → Secret text (OWASP NVD — optionnel mais recommandé)
-//   keycloak-url-uat              → Secret text (ex: http://keycloak-uat:8080)
-//   keycloak-url-preprod          → Secret text (ex: http://keycloak-preprod:8080)
-//   keycloak-client-secret-uat    → Secret text
-//   keycloak-client-secret-preprod→ Secret text
+//   dockerhub-credentials          Username/Password (Docker Hub)
+//   nvd-api-key                    Secret text (OWASP NVD  optionnel mais recommand)
+//   keycloak-url-uat               Secret text (ex: http://keycloak-uat:8080)
+//   keycloak-url-preprod           Secret text (ex: http://keycloak-preprod:8080)
+//   keycloak-client-secret-uat     Secret text
+//   keycloak-client-secret-preprod Secret text
 //
-// Serveur SonarQube configuré sous le nom "SonarQube" :
+// Serveur SonarQube configur sous le nom "SonarQube" :
 //   Manage Jenkins > Configure System > SonarQube Servers
 // =============================================================================
 
@@ -60,7 +60,7 @@ pipeline {
         }
 
         // =====================================================================
-        // DEV — Build & Tests unitaires (parallèle)
+        // DEV  Build & Tests unitaires (parallle)
         // =====================================================================
         stage('DEV - Build & Unit Tests') {
             parallel {
@@ -88,7 +88,7 @@ pipeline {
         }
 
         // =====================================================================
-        // OWASP Dependency Check — CVE score >= 7 → unstable
+        // OWASP Dependency Check  CVE score >= 7  unstable
         // =====================================================================
         stage('OWASP Dependency Check') {
             steps {
@@ -129,7 +129,7 @@ pipeline {
         }
 
         // =====================================================================
-        // SonarQube — Code & Quality Gate Analysis
+        // SonarQube  Code & Quality Gate Analysis
         // =====================================================================
         stage('SonarQube Analysis') {
             steps {
@@ -167,7 +167,7 @@ pipeline {
         }
 
         // =====================================================================
-        // Trivy — Filesystem Scan (dépendances + secrets dans le code)
+        // Trivy  Filesystem Scan (dpendances + secrets dans le code)
         // =====================================================================
         stage('Trivy Filesystem Scan') {
             steps {
@@ -200,7 +200,7 @@ pipeline {
         }
 
         // =====================================================================
-        // Docker — Build images
+        // Docker  Build images
         // =====================================================================
         stage('Docker Build') {
             parallel {
@@ -234,7 +234,7 @@ pipeline {
         }
 
         // =====================================================================
-        // Trivy — Image Scan (avant push)
+        // Trivy  Image Scan (avant push)
         // =====================================================================
         stage('Trivy Image Scan') {
             parallel {
@@ -308,13 +308,13 @@ pipeline {
         }
 
         // =====================================================================
-        // UAT — Approbation manuelle + Déploiement
+        // UAT  Approbation manuelle + Dploiement
         // =====================================================================
         stage('UAT - Approval') {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
                     input(
-                        message: "Déployer la version ${IMAGE_TAG} en UAT ?",
+                        message: "Dployer la version ${IMAGE_TAG} en UAT ?",
                         ok: 'Approuver',
                         submitter: 'admin,release-manager',
                         parameters: [
@@ -369,13 +369,13 @@ pipeline {
         }
 
         // =====================================================================
-        // PREPROD — Approbation manuelle + Déploiement
+        // PREPROD  Approbation manuelle + Dploiement
         // =====================================================================
         stage('PREPROD - Approval') {
             steps {
                 timeout(time: 2, unit: 'HOURS') {
                     input(
-                        message: "Déployer la version ${IMAGE_TAG} en PREPROD ?",
+                        message: "Dployer la version ${IMAGE_TAG} en PREPROD ?",
                         ok: 'Approuver',
                         submitter: 'admin,release-manager',
                         parameters: [
@@ -436,21 +436,21 @@ pipeline {
     // =========================================================================
     post {
         success {
-            echo "PIPELINE SUCCESS — Build: ${IMAGE_TAG} | Job: ${JOB_NAME}#${BUILD_NUMBER}"
-            // Décommentez pour activer les notifications email :
+            echo "PIPELINE SUCCESS  Build: ${IMAGE_TAG} | Job: ${JOB_NAME}#${BUILD_NUMBER}"
+            // Dcommentez pour activer les notifications email :
             // emailext(
             //     to: 'killamo5@gmail.com',
-            //     subject: "[SUCCESS] ${JOB_NAME} #${BUILD_NUMBER} — ${IMAGE_TAG}",
-            //     body: """Build ${IMAGE_TAG} a passé tous les contrôles qualité/sécurité
-            //              et est déployé en PREPROD."""
+            //     subject: "[SUCCESS] ${JOB_NAME} #${BUILD_NUMBER}  ${IMAGE_TAG}",
+            //     body: """Build ${IMAGE_TAG} a pass tous les contrles qualit/scurit
+            //              et est dploy en PREPROD."""
             // )
         }
         failure {
-            echo "PIPELINE FAILURE — Build: ${IMAGE_TAG} | Job: ${JOB_NAME}#${BUILD_NUMBER}"
+            echo "PIPELINE FAILURE  Build: ${IMAGE_TAG} | Job: ${JOB_NAME}#${BUILD_NUMBER}"
             // emailext(
             //     to: 'killamo5@gmail.com',
             //     subject: "[FAILURE] ${JOB_NAME} #${BUILD_NUMBER}",
-            //     body: "Le pipeline a échoué. Consultez les logs Jenkins."
+            //     body: "Le pipeline a chou. Consultez les logs Jenkins."
             // )
         }
         always {
