@@ -22,7 +22,7 @@ COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
 COPY --from=ubi-micro-build /mnt/rootfs /
 
 # <-- place ton export ici côté hôte: keycloak/import/realm-export.json -->
-COPY keycloak/import/realm-export.json /opt/keycloak/data/import/realm-export.json
+COPY realm-export.json /opt/keycloak/data/import/realm-export.json
 # (optionnel) bake aussi le thème si tu ne veux pas de volume:
 # COPY themes/bzhcamp/ /opt/keycloak/themes/bzhcamp/
 
@@ -36,5 +36,4 @@ WORKDIR /opt/keycloak
 
 # Garde ENTRYPOINT "kc.sh" et passe les options en CMD (plus flexible)
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
-CMD ["start", "--optimized", "--import-realm", "--proxy-headers", "xforwarded",
-     "--spi-theme-static-max-age=-1", "--spi-theme-cache-themes=false", "--spi-theme-cache-templates=false"]
+CMD ["start", "--optimized", "--import-realm", "--proxy-headers", "xforwarded","--spi-theme-static-max-age=-1", "--spi-theme-cache-themes=false", "--spi-theme-cache-templates=false"]
